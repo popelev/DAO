@@ -30,23 +30,31 @@ contract DAOVoteToken is Ownable, ERC20, ERC20Permit, ERC20Votes {
     function mint(address _to, uint256 _amount) onlyOwner() external {
         _mint(_to, _amount);
     }
+
+    function burn(address _from, uint256 _amount) external {
+        _burn(_from, _amount);
+    }
 }
 
-contract  TokenProvider is ReentrancyGuard {
+contract  TokenGiver is ReentrancyGuard {
     ERC20 public USDT;
     DAOVoteToken public VoteToken;
     address public DAO;
 
-    constructor(address _voteToken){
+    constructor(address _DAO, address _voteToken, address _usdt){
+        USDT = ERC20(_usdt);
         VoteToken = DAOVoteToken(_voteToken);
+        DAO = _DAO;
     }
 
     function buyDVT(uint256 _amount) nonReentrant() external {
 
         require(USDT.decimals() == VoteToken.decimals());
-        
+
         uint256  balanceBefore = USDT.balanceOf(address(DAO));
-        (bool success) = USDT.transferFrom(msg.sender, DAO, _amount);
+        
+        (bool a, bytes memory b) = address(USDT).call(abi.encodeWithSignature("transferFrom(address,address,uint256)",msg.sender, DAO, _amount));
+
         uint256 balanceAfter = USDT.balanceOf(address(DAO));
         
         uint256 transferedAmount = balanceAfter - balanceBefore;

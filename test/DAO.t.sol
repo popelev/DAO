@@ -1,17 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {Test, console2} from "forge-std/Test.sol";
-import {DAO} from "../src/DAO.sol";
+import {Test} from "forge-std/Test.sol";
+import {console} from "forge-std/console.sol";
+import {DAOVoteToken, TokenGiver} from "../src/Token.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract DAOTest is Test {
-    DAO public dao;
+contract DaoTest is Test {
 
-    function setUp() public {
-        dao = new DAO();
-    }
-
-    function test_Increment() public {
-        assertEq(1, 1);
-    }
+        function setUp() public {
+        }
 }
