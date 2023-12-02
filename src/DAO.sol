@@ -20,6 +20,7 @@ contract DAO  is
         IVotes _token,
         TimelockController _timelock
     ) Governor("MyGovernor") GovernorVotes(_token) GovernorVotesQuorumFraction(4) GovernorTimelockControl(_timelock) {}
+    
     function votingDelay() public pure override returns (uint256) {
         return 1 days;
     }
@@ -76,4 +77,6 @@ contract DAO  is
     function _executor() internal view override(Governor, GovernorTimelockControl) returns (address) {
         return super._executor();
     }
+
+    receive() external payable override {}
 }
