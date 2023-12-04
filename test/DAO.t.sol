@@ -29,6 +29,8 @@ contract DaoTest is Test {
         string public _description;
 
         event logUint(uint);
+
+
         function setUp() public {
                 vm.deal(deployer, 10_000 ether);
                 vm.startPrank(deployer);
@@ -36,9 +38,9 @@ contract DaoTest is Test {
                 timelock = new TimelockController(0, proposers, executors, address(0));
                 DAO_GOV = new DAO(IVotes(token), timelock);
                 
-                token.mint(users[0], 100_000 ether);
-                token.mint(users[1], 100_000 ether);
-                token.mint(users[2], 100_000 ether);
+                token.mint(users[0], 1_000_000);
+                token.mint(users[1], 1_000_000);
+                token.mint(users[2], 1_000_000);
                 
                 vm.stopPrank();
 
@@ -46,6 +48,21 @@ contract DaoTest is Test {
                 vm.deal(users[0], 10_000 ether);
                 vm.deal(users[1], 10_000 ether);
                 vm.deal(users[2], 10_000 ether);
+
+                vm.prank(users[0]);
+                token.delegate(users[0]);
+
+                vm.prank(users[1]);
+                token.delegate(users[1]);
+
+                vm.prank(users[2]);
+                token.delegate(users[2]);
+        }
+
+        function test_setUp() public {
+                assert(token.balanceOf(users[0]) == 1_000_000);
+                assert(token.balanceOf(users[1]) == 1_000_000);
+                assert(token.balanceOf(users[2]) == 1_000_000);
         }
 
         function test_createPropose() public {
@@ -72,10 +89,10 @@ contract DaoTest is Test {
 
                 skip(2 days);
                 vm.roll(172801);
-                
-                vm.prank(users[0]);
+
                 emit logUint(uint256(DAO_GOV.state(proposalId)));
-                
+
+                vm.prank(users[0]);
                 DAO_GOV.castVote(proposalId, VOTE_NO);
 
                 vm.prank(users[1]);
@@ -83,15 +100,10 @@ contract DaoTest is Test {
                 
                 vm.prank(users[2]);
                 DAO_GOV.castVote(proposalId, VOTE_ABSTAIN);
+
                 (uint256 n, uint256 y, uint256 a) = DAO_GOV.proposalVotes(proposalId);
-                assert(n == 1);
-                assert(y == 1);
-                assert(a == 1);
+                assert(n == 1_000_000);
+                assert(y == 1_000_000);
+                assert(a == 1_000_000);
         }
-
-
-        function test_setUp() public {
-                assert(token.balanceOf(users[0]) == 100_000 ether);
-        }
-
 }
